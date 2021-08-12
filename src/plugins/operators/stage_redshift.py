@@ -90,12 +90,14 @@ class StageToRedshiftOperator(BaseOperator):
                  *args, **kwargs):
 
     def execute(self, context):
-        self.log.info('StageToRedshiftOperator not implemented yet')
+        self.log.info('Initialize StageToRedshiftOperator object')
+        self.redshift_conn_id = redshift_conn_id
+        self.aws_credentials_id = aws_credentials_id
         self.table = table
+        self.s3_bucket = s3_bucket
         self.s3_key = s3_key
         self.delimiter = delimiter
         self.ignore_headers = ignore_headers
-        self.aws_credentials_id = aws_credentials_id
         
         # Extract aws key and secret
         #### TODO
@@ -104,6 +106,12 @@ class StageToRedshiftOperator(BaseOperator):
         # Create aws resources on the fly
         role_arn = create_iam_role(aws_key_id, aws_secret)
         redshift_conn_id = create_redshift_cluster(aws_key_id, aws_secret, role_arn)
+        
+        # Create PostreSQL connection and stage data
+        redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
+
+        self.log.info("Clearing data from destination Redshift table")
+        redshift.run("DELETE FROM {}".format(self.table))
         
         # Copy data from s3 to Redshift
         self.log.info("Copying data from S3 to Redshift")
@@ -118,8 +126,6 @@ class StageToRedshiftOperator(BaseOperator):
             self.delimiter
         )
         redshift.run(formatted_sql)
-
-
 
 
 
