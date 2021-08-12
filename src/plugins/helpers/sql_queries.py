@@ -77,6 +77,15 @@ time_table_create = ("""CREATE TABLE IF NOT EXISTS time ( \
                             weekday             int NOT NULL)""")
 
 # STAGING TABLES
+copy_sql = """
+            COPY {}
+            FROM '{}'
+            ACCESS_KEY_ID '{{}}'
+            SECRET_ACCESS_KEY '{{}}'
+            IGNOREHEADER 1
+            DELIMITER ','
+           """
+
 
 staging_events_copy = (f"""
                          copy staging_events_table from {config.get('S3','LOG_DATA')}
