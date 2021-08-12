@@ -8,15 +8,18 @@ class LoadFactOperator(BaseOperator):
 
     @apply_defaults
     def __init__(self,
-                 # Define your operators params (with defaults) here
-                 # Example:
-                 # conn_id = your-connection-name
+                 redshift_conn_id="",
                  *args, **kwargs):
 
         super(LoadFactOperator, self).__init__(*args, **kwargs)
-        # Map params here
-        # Example:
-        # self.conn_id = conn_id
+        self.redshift_conn_id = redshift_conn_id
 
     def execute(self, context):
-        self.log.info('LoadFactOperator not implemented yet')
+         # Create PostreSQL connection and load fact data
+        self.log.info('Create PostreSQL connection')
+        redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
+        
+        # Execute load sql command for songplay fact table
+        self.log.info('Inserting songplay data into fact table')
+        sql_fact_load = S3ToRedshiftOperator.songplay_table_insert
+        redshift.run(sql_fact_load)
