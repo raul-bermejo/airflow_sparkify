@@ -31,7 +31,8 @@ class LoadDimensionOperator(BaseOperator):
         elif self.table == "time":
             sql_dim_load = S3ToRedshiftOperator.artist_table_insert
         else:
-            self.log.info('Error: Dimension Table to be loaded was not defined')
+            self.log.info('''Error: Dimension Table to be loaded was not defined or was inserted incorrectly.
+                              Available tables are: users, song, artist or time.''')
             sql_dim_load = None
             
         # Execute load sql command for dim table
