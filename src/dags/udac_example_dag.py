@@ -16,7 +16,8 @@ default_args = {
     'email_on_failure': False,
     'retries': 3,
     'retry_delay': timedelta(minutes=5),
-    }
+    
+}
 
 dag = DAG('udac_example_dag',
           default_args=default_args,
@@ -27,11 +28,17 @@ dag = DAG('udac_example_dag',
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
 stage_events_to_redshift = StageToRedshiftOperator(
+    aws_credentials='####',
+    table='staging_events',
+    s3_key='log_data'
     task_id='Stage_events',
     dag=dag
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
+    aws_credentials='####',
+    table='staging_songs',
+    s3_key='song_data'
     task_id='Stage_songs',
     dag=dag
 )
@@ -67,6 +74,7 @@ run_quality_checks = DataQualityOperator(
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
+
 
 # Configure DAG order
 start_operator >> [stage_events_to_redshift, stage_songs_to_redshift] >> load_songplays_table 
