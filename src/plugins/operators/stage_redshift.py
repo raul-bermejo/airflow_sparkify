@@ -104,6 +104,20 @@ class StageToRedshiftOperator(BaseOperator):
         # Create aws resources on the fly
         role_arn = create_iam_role(aws_key_id, aws_secret)
         redshift_conn_id = create_redshift_cluster(aws_key_id, aws_secret, role_arn)
+        
+        # Copy data from s3 to Redshift
+        self.log.info("Copying data from S3 to Redshift")
+        rendered_key = self.s3_key.format(**context)
+        s3_path = "s3://{}/{}".format(self.s3_bucket, rendered_key)
+        formatted_sql = S3ToRedshiftOperator.copy_sql.format(
+            self.table,
+            s3_path,
+            credentials.access_key,
+            credentials.secret_key,
+            self.ignore_headers,
+            self.delimiter
+        )
+        redshift.run(formatted_sql)
 
 
 
