@@ -44,6 +44,7 @@ stage_songs_to_redshift = StageToRedshiftOperator(
 )
 
 load_songplays_table = LoadFactOperator(
+    redshift_conn_id="#####",
     task_id='Load_songplays_fact_table',
     dag=dag
 )
