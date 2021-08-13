@@ -130,6 +130,8 @@ load_time_dimension_table = LoadDimensionOperator(
 )
 
 run_quality_checks = DataQualityOperator(
+    redshift_conn_id="#####",
+    table=["users", "song", "artist", "time"]
     task_id='Run_data_quality_checks',
     dag=dag
 )
