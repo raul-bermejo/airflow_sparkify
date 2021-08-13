@@ -2,6 +2,17 @@
 
 # [Update README for this project]
 
+# # TO-DO:
+
+- [ ] Attempted to deploy code into Airflow's local instance
+- [ ] Entered aws credentials into Airflow GUI variables
+- [ ] Created Redshift cluster (programmatically)
+- [ ] Entered cluster endpoint as Airflow UI
+- [ ] Tested DAG
+- [ ] Doc-string functions
+- [ ] Updated README
+- [ ] Submitted project
+
 This project is intended to analyze data for a hypothetical start-up called Sparkify. This music streaming start-up wants to analyze their song- and log-related data in a more efficient and risk-free way, by both using AWS Redshift.
 
 The goal of this project is to build data warehousing capabilities for Sparify. More specifically, the song- and log-data (JSON) is stored in AWS S3 buckets, staged into AWS Redshift and subsquently the data is put into a star-schema within a PostgreSQL database within redshift. 
