@@ -8,12 +8,12 @@ def create_iam_role(aws_key_id, aws_secret,
     Doc-string function later
     """
     
+    # Initialize iam client
     iam = boto3.client('iam',
                         region_name='us-west-2',
                         aws_access_key_id=aws_key_id,
                         aws_secret_access_key=aws_secret)
     
-    print('Creating new IAM role')
     try:
         print('Creating new IAM role')
         airflow_role = iam.create_role(Path='/',
@@ -37,18 +37,22 @@ def create_iam_role(aws_key_id, aws_secret,
     return role_arn
 
 
-def create_redshift_cluster(aws_key_id, aws_secret, role_arn,
-                            cluster_type="",
-                            node_type="", 
-                            n_nodes=1,
-                            db_name="airflow",
-                            cluster_id="",
-                            db_user="airflow",
-                            db_pwd="airflow"):
+def create_redshift_cluster(aws_key_id, aws_secret,
+                            cluster_type="multi-node",
+                            node_type="dc2.large", 
+                            n_nodes=2,
+                            db_name="airflow-sparkify",
+                            cluster_id="airflow-sparkify",
+                            db_user="airflow-sparkify",
+                            db_pwd="Passw0rd"):
     """
     Doc-string function later
     """
+
+    # Call ARN role:
+    role_arn = create_iam_role(aws_key_id, aws_secret)
     
+    # Initialize iam client
     redshift = boto3.client('redshift',
                             region_name='us-west-2',
                             aws_access_key_id=aws_key_id,
@@ -66,10 +70,14 @@ def create_redshift_cluster(aws_key_id, aws_secret, role_arn,
                                         MasterUserPassword=db_pwd,
                                         # Roles (for s3 access)
                                         IamRoles = [role_arn])
+
+        print(f"Cluster was created succesfully.")
         
     except Exception as e:
         print(e)
-    print(f"Cluster was created succesfully")
+    
+
+    return None
 
 
 # Spin up AWS resources
@@ -81,8 +89,8 @@ if __name__ == "__main__":
     aws_secret = config.get('AWS','AWS_SECRET')
         
     # Create aws resources on the fly
-    create_redshift_cluster = False
-    if create_redshift_cluster:
-        role_arn = create_iam_role(aws_key_id, aws_secret)
-        redshift_conn_id = create_redshift_cluster(aws_key_id, aws_secret, role_arn)
-        print(f"The endpoint of the created cluster is: {redshift_conn_id}.")
+    create_redshift = True
+    if create_redshift:
+        create_redshift_cluster(aws_key_id, aws_secret)
+
+        # print(f"The endpoint of the created cluster is: {redshift_conn_id}.")
