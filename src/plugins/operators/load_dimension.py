@@ -1,6 +1,7 @@
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
+from airflow.operators import StageToRedshiftOperator
 
 class LoadDimensionOperator(BaseOperator):
 
@@ -9,7 +10,7 @@ class LoadDimensionOperator(BaseOperator):
     @apply_defaults
     def __init__(self,
                  redshift_conn_id="",
-                 table=""
+                 table="",
                  *args, **kwargs):
 
         super(LoadDimensionOperator, self).__init__(*args, **kwargs)
@@ -23,13 +24,13 @@ class LoadDimensionOperator(BaseOperator):
         
         # Determine what dimension has to be loaded
         if self.table == "users":
-            sql_dim_load = S3ToRedshiftOperator.users_table_insert 
+            sql_dim_load = StageToRedshiftOperator.users_table_insert 
         elif self.table == "song":
-            sql_dim_load = S3ToRedshiftOperator.song_table_insert 
+            sql_dim_load = StageToRedshiftOperator.song_table_insert 
         elif self.table == "artist":
-            sql_dim_load = S3ToRedshiftOperator.artist_table_insert 
+            sql_dim_load = StageToRedshiftOperator.artist_table_insert 
         elif self.table == "time":
-            sql_dim_load = S3ToRedshiftOperator.artist_table_insert
+            sql_dim_load = StageToRedshiftOperator.artist_table_insert
         else:
             self.log.info('''Error: Dimension Table to be loaded was not defined or was inserted incorrectly.
                               Available tables are: users, song, artist or time.''')
