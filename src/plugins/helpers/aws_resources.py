@@ -1,5 +1,6 @@
 import boto3
 import json
+import configparser
 
 def create_iam_role(aws_key_id, aws_secret,
                     rolename = "redhisft-airflow"):
@@ -73,8 +74,13 @@ def create_redshift_cluster(aws_key_id, aws_secret, role_arn,
 
 # Spin up AWS resources
 if __name__ == "__main__":
+    # Read AWS credentials from .cfg file
+    config = configparser.ConfigParser()
+    config.read_file(open('aws.cfg'))
+    aws_key_id = config.get('AWS','AWS_KEY_ID')
+    aws_secret = config.get('AWS','AWS_SECRET')
+        
     # Create aws resources on the fly
-    
     create_redshift_cluster = False
     if create_redshift_cluster:
         role_arn = create_iam_role(aws_key_id, aws_secret)
