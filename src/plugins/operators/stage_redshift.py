@@ -1,4 +1,5 @@
 from airflow.hooks.postgres_hook import PostgresHook
+from airflow.contrib.hooks.aws_hook import AwsHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 import boto3
@@ -39,7 +40,7 @@ def create_iam_role(aws_key_id, aws_secret,
 
 
 def create_redshift_cluster(aws_key_id, aws_secret, role_arn,
-                            cluster_type=""
+                            cluster_type="",
                             node_type="", 
                             n_nodes=1,
                             db_name="airflow",
@@ -89,7 +90,6 @@ class StageToRedshiftOperator(BaseOperator):
                  ignore_headers=1,
                  *args, **kwargs):
 
-    def execute(self, context):
         self.log.info('Initialize StageToRedshiftOperator object')
         self.redshift_conn_id = redshift_conn_id
         self.aws_credentials_id = aws_credentials_id
@@ -98,6 +98,11 @@ class StageToRedshiftOperator(BaseOperator):
         self.s3_key = s3_key
         self.delimiter = delimiter
         self.ignore_headers = ignore_headers
+
+        
+
+    def execute(self, context):
+
         
         # Extract aws key and secret
         #### TODO
@@ -107,9 +112,12 @@ class StageToRedshiftOperator(BaseOperator):
         role_arn = create_iam_role(aws_key_id, aws_secret)
         redshift_conn_id = create_redshift_cluster(aws_key_id, aws_secret, role_arn)
         
-        # Create PostreSQL connection and stage data
+        # Initialize neccesary hooks
+        aws_hook = AwsHook(self.aws_credentials_id)
+        credentials = aws_hook.get_credentials()
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
+        # Create PostreSQL connection and stage data
         self.log.info("Clearing data from destination Redshift table")
         redshift.run("DELETE FROM {}".format(self.table))
         
@@ -117,7 +125,7 @@ class StageToRedshiftOperator(BaseOperator):
         self.log.info("Copying data from S3 to Redshift")
         rendered_key = self.s3_key.format(**context)
         s3_path = "s3://{}/{}".format(self.s3_bucket, rendered_key)
-        formatted_sql = S3ToRedshiftOperator.copy_sql.format(
+        formatted_sql = StageToRedshiftOperator.copy_sql.format(
             self.table,
             s3_path,
             credentials.access_key,
