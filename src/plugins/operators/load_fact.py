@@ -1,6 +1,7 @@
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
+from airflow.operators import StageToRedshiftOperator
 
 class LoadFactOperator(BaseOperator):
 
@@ -21,5 +22,5 @@ class LoadFactOperator(BaseOperator):
         
         # Execute load sql command for songplay fact table
         self.log.info('Inserting songplay data into fact table')
-        sql_fact_load = S3ToRedshiftOperator.songplay_table_insert
+        sql_fact_load = StageToRedshiftOperator.songplay_table_insert
         redshift.run(sql_fact_load)
