@@ -24,13 +24,13 @@ class DataQualityOperator(BaseOperator):
         failed_checks = []
         
         # Logging in case input table is null
-        if len(tables) == 0:
+        if len(self.tables) == 0:
             self.log.info('No tables were input for check so there was no data quality checks.')
          
         # Perform data quality check for each input table
-        for table in tables:
+        for table in self.tables:
             sql_query = f'SELECT COUNT(*) FROM {table} WHERE userid IS NULL'
-            result = redshift.get_records(sql)[0]
+            result = redshift.get_records(sql_query)[0]
             
             expected_result = 0
             
