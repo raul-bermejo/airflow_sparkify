@@ -92,5 +92,3 @@ if __name__ == "__main__":
     create_redshift = True
     if create_redshift:
         create_redshift_cluster(aws_key_id, aws_secret)
-
-        # print(f"The endpoint of the created cluster is: {redshift_conn_id}.")
