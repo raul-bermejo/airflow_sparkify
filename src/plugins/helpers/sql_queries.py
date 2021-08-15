@@ -19,7 +19,7 @@ class SqlQueries:
                 AND events.length = songs.duration
     """)
 
-    user_table_insert = ("""
+    users_table_insert = ("""
         SELECT distinct userid, firstname, lastname, gender, level
         FROM staging_events
         WHERE page='NextSong'
