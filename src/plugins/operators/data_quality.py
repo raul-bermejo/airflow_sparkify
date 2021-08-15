@@ -14,8 +14,8 @@ class DataQualityOperator(BaseOperator):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
         # Map params here
-        # Example:
-        # self.conn_id = conn_id
+        self.redshift_conn_id = redshift_conn_id
+        self.tables = tables
 
     def execute(self, context):
         self.log.info('Starting Data quality check.')
