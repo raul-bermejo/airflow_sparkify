@@ -13,7 +13,6 @@ class DataQualityOperator(BaseOperator):
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
-        # Map params here
         self.redshift_conn_id = redshift_conn_id
         self.tables = tables
 
@@ -46,4 +45,4 @@ class DataQualityOperator(BaseOperator):
             self.log.info('The data quality checks were passed succesfully!')
        
       
-            
+         
