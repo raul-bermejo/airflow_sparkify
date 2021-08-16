@@ -8,13 +8,13 @@ from airflow.utils.decorators import apply_defaults
 class StageToRedshiftOperator(BaseOperator):
     ui_color = '#358140'
     copy_sql = """
-                COPY {}
-                FROM '{}'
-                ACCESS_KEY_ID '{}'
-                SECRET_ACCESS_KEY '{}'
-                FORMAT AS JSON '{}'
-                ;
-               """
+        COPY {}
+        FROM '{}'
+        ACCESS_KEY_ID '{}'
+        SECRET_ACCESS_KEY_ID '{}'
+        {}
+        ;
+    """
     
     @apply_defaults
     def __init__(self,
@@ -24,7 +24,6 @@ class StageToRedshiftOperator(BaseOperator):
                  s3_bucket = "",
                  s3_key="",
                  table = "",
-                 json_type = "auto",
                  extra_params = "",
                  *args, **kwargs):
         
@@ -36,7 +35,6 @@ class StageToRedshiftOperator(BaseOperator):
         self.s3_key = s3_key
         self.table = table
         self.extra_params = extra_params
-        self.json_type = json_type
         
     def execute(self, context):
         
@@ -51,14 +49,12 @@ class StageToRedshiftOperator(BaseOperator):
         #Staging Data from S3 to Redshift
         rendered_key = self.s3_key.format(**context)
         s3_path = "s3://{}/{}".format(self.s3_bucket, rendered_key)
-
-        # Format sql insert statement and run redshift_hook
         formatted_sql = StageToRedshiftOperator.copy_sql.format(
             self.table,
             s3_path,
             credentials.access_key,
             credentials.secret_key,
             self.ignore_headers,
-            self.json_type
+            self.extra_params
         )
         redshift.run(formatted_sql)
