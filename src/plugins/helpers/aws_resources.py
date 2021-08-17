@@ -113,18 +113,11 @@ if __name__ == "__main__":
     try:
         for query in create_table_queries:
             response = redshift.execute_statement(
-                ClusterIdentifier='string',
-                Database='string',
-                DbUser='string',
-                Parameters=[
-                    {
-                        'name': 'string',
-                        'value': 'string'
-                    },
-                ],
-                SecretArn='string',
+                ClusterIdentifier= cluster_id,
+                Database= db_name,
+                DbUser= db_user,
                 Sql=query
             )
     
-    except Error as e:
+    except Exception as e:
         print(e)
