@@ -1,5 +1,6 @@
 # Manually added
 aws.cfg
+aws_sandpit.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
