@@ -1,7 +1,7 @@
 import boto3
 import json
 import configparser
-import create_tables
+from create_tables import *
 
 def create_iam_role(aws_key_id, aws_secret,
                     rolename = "redhisft-airflow"):
@@ -38,7 +38,7 @@ def create_iam_role(aws_key_id, aws_secret,
     return role_arn
 
 
-def create_redshift_cluster(redshift, aws_key_id, aws_secret,
+def create_redshift_cluster(aws_key_id, aws_secret,
                             cluster_type="multi-node",
                             node_type="dc2.large", 
                             n_nodes=2,
@@ -51,8 +51,14 @@ def create_redshift_cluster(redshift, aws_key_id, aws_secret,
     """
 
     # Call ARN role:
-    role_arn = create_iam_role(aws_key_id, aws_secret)
+    # role_arn = create_iam_role(aws_key_id, aws_secret)
     
+    # Create redshift admin client
+    redshift = boto3.client('redshift',
+                            region_name='us-west-2',
+                            aws_access_key_id=aws_key_id,
+                            aws_secret_access_key=aws_secret)
+
     
     print(f"Creating Redshift cluster:")
     try:
@@ -65,7 +71,7 @@ def create_redshift_cluster(redshift, aws_key_id, aws_secret,
                                         MasterUsername=db_user,
                                         MasterUserPassword=db_pwd,
                                         # Roles (for s3 access)
-                                        IamRoles = [role_arn])
+                                        IamRoles = ['arn:aws:iam::684401159067:role/redhisft-airflow'])
 
         print(f"Cluster was created succesfully.")
         
@@ -83,12 +89,6 @@ if __name__ == "__main__":
     config.read_file(open('aws.cfg'))
     aws_key_id = config.get('AWS','AWS_KEY_ID')
     aws_secret = config.get('AWS','AWS_SECRET')
-
-    # Initialize iam client
-    redshift = boto3.client('redshift',
-                            region_name='us-west-2',
-                            aws_access_key_id=aws_key_id,
-                            aws_secret_access_key=aws_secret)
 
     # Define cluster and database parameters
     cluster_type="multi-node"
@@ -109,15 +109,23 @@ if __name__ == "__main__":
                                 n_nodes, db_name, cluster_id,
                                 db_user, db_pwd)
     
+    # Instantiate redshift data client
+    redshift_data = boto3.client('redshift-data',
+                                region_name='us-west-2',
+                                aws_access_key_id=aws_key_id,
+                                aws_secret_access_key=aws_secret)
+    
     print(f"Attempt table creation:")
     try:
         for query in create_table_queries:
-            response = redshift.execute_statement(
+            response = redshift_data.execute_statement(
                 ClusterIdentifier= cluster_id,
                 Database= db_name,
                 DbUser= db_user,
                 Sql=query
             )
-    
+        print("="*70)
+        print(f"The SQL tables were created succesfully")
+        print("="*70)
     except Exception as e:
         print(e)
