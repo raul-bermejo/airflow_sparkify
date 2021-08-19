@@ -18,7 +18,7 @@ The goal of this project is to build data warehousing capabilities for Sparkify,
 
 ## Staging
 
-![alt text](https://github.com/raul-bermejo/cloud_sparkify/blob/main/images/staging_tables.png)
+![alt text](https://github.com/raul-bermejo/airflow_sparkify/blob/main/figures/staging_tables.png)
 
 The raw data produced by the Sparkify app is staged as raw data into Redshift. In other words, the schema from the raw data (see figure above) serves as a landing zone.
 
@@ -26,7 +26,7 @@ The raw data produced by the Sparkify app is staged as raw data into Redshift. I
 
 The implemented database schema can be seen in the ER diagram below.
 
-![alt text](https://github.com/raul-bermejo/cloud_sparkify/blob/main/images/sparkify_erd_transparent.png)
+![alt text](https://github.com/raul-bermejo/airflow_sparkify/blob/main/figures/sparkify_erd.png)
 
 The Entity Relationshiip Diagram (ERD) above is a Star Schema where the facts (or metrics) are represented by the songplays relation. The reason for this is to have the analysis of log and song data at the heart of the business. From the songplays relation one can observe the dimension of the sparkify business: users, artists, songs and time. Each of these relations represents a core business aspect of sparkify.
 
