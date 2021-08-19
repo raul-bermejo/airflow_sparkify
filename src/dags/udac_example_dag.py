@@ -14,22 +14,29 @@ default_args = {
     'start_date': datetime(2021, 8, 11),
     'depends_on_past': False,
     'email_on_failure': False,
-    'retries': 3,
+    'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    
+    'catchup': False,
 }
 
 dag = DAG('sparkify_main_dag',
           default_args=default_args,
-          description='Load and transform data in Redshift with Airflow',
-          schedule_interval='0 * * * *'
+          description='Load and transform data in Redshift with Airflow'
         )
+
+# creates_tables_task = PostgresOperator(
+#     task_id='Create_tables',
+#     dag=dag,
+#     sql='create_tables.sql',
+#     postgres_conn_id='redshift'
+# )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
 stage_events_to_redshift = StageToRedshiftOperator(
     aws_credentials='aws_credentials',
     table='staging_events',
+    s3_bucket='udacity-dend',
     s3_key='log_data',
     task_id='Stage_events',
     dag=dag
@@ -38,6 +45,7 @@ stage_events_to_redshift = StageToRedshiftOperator(
 stage_songs_to_redshift = StageToRedshiftOperator(
     aws_credentials='aws_credentials',
     table='staging_songs',
+    s3_bucket='udacity-dend',
     s3_key='song_data',
     task_id='Stage_songs',
     dag=dag
@@ -93,6 +101,7 @@ end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 
 # Configure DAG order
+# creates_tables_task
 start_operator >> [stage_events_to_redshift, stage_songs_to_redshift] >> load_songplays_table 
 load_songplays_table >> [load_user_dimension_table, load_song_dimension_table, load_artist_dimension_table, load_time_dimension_table] >> run_quality_checks
 run_quality_checks >> end_operator

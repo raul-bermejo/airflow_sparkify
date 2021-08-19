@@ -72,6 +72,7 @@ def create_redshift_cluster(aws_key_id, aws_secret,
                                         MasterUserPassword=db_pwd,
                                         # Roles (for s3 access)
                                         IamRoles = ['arn:aws:iam::684401159067:role/redhisft-airflow'])
+        
 
         print(f"Cluster was created succesfully.")
         
@@ -98,6 +99,13 @@ if __name__ == "__main__":
     cluster_id="airflow-sparkify"
     db_user="airflow-sparkify"
     db_pwd="Passw0rd"
+
+#     DWH_ENDPOINT = dwhcluster.caskbqlv7js2.us-west-2.redshift.amazonaws.com
+# DWH_DB=dwh
+# DWH_DB_USER=dwhuser
+# DWH_DB_PASSWORD=Passw0rd
+# DWH_PORT=5439
+
     
 
 
@@ -109,23 +117,21 @@ if __name__ == "__main__":
                                 n_nodes, db_name, cluster_id,
                                 db_user, db_pwd)
     
-    # Instantiate redshift data client
-    redshift_data = boto3.client('redshift-data',
-                                region_name='us-west-2',
-                                aws_access_key_id=aws_key_id,
-                                aws_secret_access_key=aws_secret)
     
     print(f"Attempt table creation:")
-    try:
-        for query in create_table_queries:
-            response = redshift_data.execute_statement(
-                ClusterIdentifier= cluster_id,
-                Database= db_name,
-                DbUser= db_user,
-                Sql=query
-            )
-        print("="*70)
-        print(f"The SQL tables were created succesfully")
-        print("="*70)
-    except Exception as e:
-        print(e)
+    # try:
+
+
+
+    #     for query in create_table_queries:
+    #         response = redshift_data.execute_statement(
+    #             ClusterIdentifier= cluster_id,
+    #             Database= db_name,
+    #             DbUser= db_user,
+    #             Sql=query
+    #         )
+    #     print("="*70)
+    #     print(f"The SQL tables were created succesfully")
+    #     print("="*70)
+    # except Exception as e:
+    #     print(e)
