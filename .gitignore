@@ -1,6 +1,8 @@
 # Manually added
 aws.cfg
 aws_sandpit.ipynb
+create_tables.py
+aws_resources.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
