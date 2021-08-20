@@ -66,10 +66,10 @@ The author of this repo is me, Raul Bermejo, as part of the Data Engineer progra
 
 To load the data into Redshift via Airflow, the steps to follow are:
 
-(1) Create Redshift cluster using AWS (either progarmatically or through the consolole)
-(2) Run create_tables.py to create the SQL tables  (both staging and star-schema)
-(3) Open Airflow and trigger the main DAG 'sparkify_main_dag', so all ETL jobs are run automatically
-(4) Make sure you delete the Redshift cluster once the data is loaded
+1. Create Redshift cluster using AWS (either progarmatically or through the consolole)
+2. Run create_tables.py to create the SQL tables  (both staging and star-schema)
+3. Open Airflow and trigger the main DAG 'sparkify_main_dag', so all ETL jobs are run automatically
+4. Make sure you delete the Redshift cluster once the data is loaded
 
 ## Contributing
 Pull requests are welcome. For other issues and/or changes, feel free to open an issue.
